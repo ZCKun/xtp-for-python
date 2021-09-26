@@ -1,5 +1,10 @@
 # xtp-for-python
 
+Supported:
+[x] OSX
+[x] Linux
+[x] Windows
+
 you need:
 > pybind11 \
 > cmake (maybe need > 3.20+)
