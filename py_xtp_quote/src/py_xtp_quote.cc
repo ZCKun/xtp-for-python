@@ -10,8 +10,6 @@
 #include "xtp_quote_api.h"
 #include <cstring>
 #include <string>
-#include <sys/_types/_int32_t.h>
-#include <sys/_types/_int64_t.h>
 #include <unistd.h>
 
 inline void get_str(py::dict& d, const std::string& key, char* value)
