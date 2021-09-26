@@ -23,7 +23,7 @@ Enjoy!
 
 
 ## Thanks
-[xtp_api_pytyhon](https://github.com/ztsec/xtp_api_python)
+[xtp_api_python](https://github.com/ztsec/xtp_api_python)
 
 ## Concat
 E-Mail: zckuna@163.com
