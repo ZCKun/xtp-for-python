@@ -1,7 +1,7 @@
 # xtp-for-python
 
 you need:
-> pybind11
+> pybind11 \
 > cmake (maybe need > 3.20+)
 
 ## Build
