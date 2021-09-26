@@ -1,9 +1,9 @@
 # xtp-for-python
 
 Supported:\
--[x] OSX\
--[x] Linux\
--[x] Windows\
+- [x] OSX\
+- [x] Linux\
+- [x] Windows
 
 you need:
 > pybind11 \
