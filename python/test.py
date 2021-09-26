@@ -1,4 +1,5 @@
 import os
+import sys
 
 from api import QuoteApi
 from api.xtp_types import XTP_EXCHANGE_TYPE
@@ -8,6 +9,14 @@ class Md(QuoteApi):
 
     def __init__(self):
         super().__init__()
+
+    def on_disconnected(self, reason: int):
+        """
+        当客户端与行情后台通信连接断开时,该方法被调用
+        :param reason: 错误原因,请与错误代码表对应
+        """
+        print("disconnected")
+        sys.exit(1)
 
     def on_query_all_tickers_full_info(self, ticker_info: dict, error_info: dict, is_last: bool):
         """

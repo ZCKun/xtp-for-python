@@ -23,7 +23,7 @@ class QuoteApi(py_xtp_quote.QuoteApi):
 
         :param reason: 错误原因,请与错误代码表对应
         """
-        pass
+        raise NotImplementedError
 
     def login(self, ip: str, port: int, user: str, passwd: str, sock_type: int, local_ip: str) -> int:
         """
