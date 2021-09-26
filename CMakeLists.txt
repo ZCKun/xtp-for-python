@@ -10,15 +10,18 @@ option(LINUX "" ON)
 option(OSX "" ON)
 option(WIN "" ON)
 
-#find_package(pybind11 CONFIG REQUIRED)
-
 set(CMAKE_BUILD_TYPE "Release")
 set(CMAKE_CXX_FLAGS 
-    # -I/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/include/python3.9 
     "${CMAKE_CXX_FLAGS} -O3 -Wall -shared -std=c++11")
 
 set(XTPAPI_PATH xtpapi)
 include_directories(${XTPAPI_PATH})
+
+## get platform
+set(PLATFORM_NAME "")
+execute_process(COMMAND python3-config --extension-suffix OUTPUT_VARIABLE PLATFORM_NAME)
+string(REGEX REPLACE "\n$" "" PLATFORM_NAME "${PLATFORM_NAME}")
+MESSAGE("Platform: ${PLATFORM_NAME}")
 
 set(XTP_LIB_PATH)
 if (LINUX)
@@ -37,17 +40,15 @@ find_library(XTPAPI_MD_LIBRARY
 )
 find_package(pybind11 CONFIG REQUIRED)
 
-#set(PYTHON_LIBRARY /usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/lib/)
-#set(PYTHON_INCLUDE_PATH /usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/include/python3.9/)
 include_directories(${PYTHON_INCLUDE_PATH})
 
-# add_definitions(-BUILD_XTP_MD)
 set(XTP_MD_PATH ${CMAKE_CURRENT_SOURCE_DIR}/py_xtp_quote/include/)
 include_directories(${XTP_MD_PATH})
 set(PY_XTP_MD_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/py_xtp_quote/src/py_xtp_quote.cc)
 add_library(py_xtp_quote SHARED ${PY_XTP_MD_SOURCE} ${XTP_MD_PATH})
 
 set_target_properties(py_xtp_quote PROPERTIES PREFIX "")
+set_target_properties(py_xtp_quote PROPERTIES SUFFIX "${PLATFORM_NAME}")
+#set(A ".xxx")
+#set_target_properties(py_xtp_quote PROPERTIES PREFIX "${A}")
 target_link_libraries(py_xtp_quote ${PYTHON_LIBRARY_PATH} ${XTPAPI_MD_LIBRARY} pybind11::lto pybind11::embed pybind11::module)
-
-#target_link_libraries(py_xtp_api PRIVATE pybind11::lto pybind11::embed pybind11::module)
