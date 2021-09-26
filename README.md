@@ -1,8 +1,8 @@
 # xtp-for-python
 
-Supported:\
-- [x] OSX\
-- [x] Linux\
+Supported:
+- [x] OSX
+- [x] Linux
 - [x] Windows
 
 you need:
