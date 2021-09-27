@@ -1,9 +1,4 @@
 #include "py_xtp_quote.h"
-#include "pybind11/attr.h"
-#include "pybind11/cast.h"
-#include "pybind11/gil.h"
-#include "pybind11/pybind11.h"
-#include "pybind11/pytypes.h"
 #include "xquote_api_struct.h"
 #include "xtp_api_data_type.h"
 #include "xtp_api_struct_common.h"
@@ -947,6 +942,7 @@ struct QuoteApiWrap: QuoteApi
     {
         try {
             pybind11::get_overload(this, "on_depth_market_data")(data, bid1_qty_list, bid1_count, max_bid1_count, ask1_qty_list, ask1_count, max_ask1_count);
+            printf("on_depth_market_data===>bid1_count:%d, ask1_count:%d\n", bid1_count, ask1_count);
         } catch (pybind11::error_already_set const &) {
             PyErr_Print();
         }

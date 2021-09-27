@@ -14,8 +14,11 @@ set(CMAKE_BUILD_TYPE "Release")
 set(CMAKE_CXX_FLAGS 
     "${CMAKE_CXX_FLAGS} -O3 -Wall -shared -std=c++11")
 
+find_package(pybind11 CONFIG REQUIRED)
+
 set(XTPAPI_PATH xtpapi)
-include_directories(${XTPAPI_PATH})
+include_directories(${XTPAPI_PATH}
+        py_xtp_quote/include)
 
 ## get platform
 set(PLATFORM_NAME "")
@@ -38,7 +41,6 @@ find_library(XTPAPI_MD_LIBRARY
     NAMES xtpquoteapi
     PATHS ${XTP_LIB_PATH}
 )
-find_package(pybind11 CONFIG REQUIRED)
 
 include_directories(${PYTHON_INCLUDE_PATH})
 

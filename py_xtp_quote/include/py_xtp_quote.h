@@ -4,6 +4,7 @@
 #include "pybind11/embed.h"
 #include "xquote_api_struct.h"
 #include "xtp_quote_api.h"
+
 #include <condition_variable>
 #include <functional>
 #include <mutex>
@@ -14,7 +15,7 @@
 #include <thread>
 #include <utility>
 
-namespace py= pybind11;
+namespace py = pybind11;
 
 #define ON_DISCONNECTED 1
 #define ON_ERROR 2
@@ -68,13 +69,13 @@ public:
     }
 };
 
-void get_int(py::dict d, std::string key, int* value);
+void get_int(py::dict d, std::string key, int *value);
 
-void get_double(py::dict d, std::string key, double* value);
+void get_double(py::dict d, std::string key, double *value);
 
-void get_char(py::dict d, std::string key, char* value);
+void get_char(py::dict d, std::string key, char *value);
 
-void get_str(py::dict& d, const std::string& key, char* value);
+void get_str(py::dict &d, const std::string &key, char *value);
 
 struct Task
 {
@@ -85,10 +86,10 @@ struct Task
     int task_one_all_counts;
     int task_two_counts;
     int task_two_all_counts;
-    void* task_data;
-    void* task_error;
-    void* task_data_one;
-    void* task_data_two;
+    void *task_data;
+    void *task_error;
+    void *task_data_one;
+    void *task_data_two;
     bool task_last;
 };
 
@@ -101,7 +102,7 @@ private:
     std::condition_variable condition_variable_;
 
 public:
-    void push(T const& data)
+    void push(T const &data)
     {
         {
             std::lock_guard<std::mutex> lock(mutex_);
@@ -120,8 +121,7 @@ public:
     T wait_and_pop()
     {
         std::unique_lock<std::mutex> lock(mutex_);
-        while (queue_.empty())
-        {
+        while (queue_.empty()) {
             condition_variable_.wait(lock);
         }
         auto data = queue_.front();
@@ -131,114 +131,205 @@ public:
 };
 
 
-class QuoteApi: public XTP::API::QuoteSpi
+class QuoteApi : public XTP::API::QuoteSpi
 {
 
 private:
-    XTP::API::QuoteApi* api_ptr_;
+    XTP::API::QuoteApi *api_ptr_;
     std::thread *task_thread_ptr_;
-    ConcurrentQueue<Task*> task_queue_;
+    ConcurrentQueue<Task *> task_queue_;
 
 public:
     QuoteApi()
+            : api_ptr_(nullptr),
+              task_thread_ptr_(nullptr)
     {
-        std::thread([&]{
+        std::thread([&] {
             process_task();
         }).detach();
         // task_thread_ptr_ = &t;
     }
 
-    ~QuoteApi()
-    {}
+    ~QuoteApi() = default;
 
     // void OnDisconnected(int reason) override;
 
     void OnError(XTPRI *error_info) override;
 
     void OnSubMarketData(XTPST *ticker, XTPRI *error_info, bool is_last) override;
-    void OnDepthMarketData(XTPMD *market_data, int64_t bid1_qty[], int32_t bid1_count, int32_t max_bid1_count, int64_t ask1_qty[], int32_t ask1_count, int32_t max_ask1_count) override;
+
+    void OnDepthMarketData(XTPMD *market_data, int64_t bid1_qty[], int32_t bid1_count, int32_t max_bid1_count,
+                           int64_t ask1_qty[], int32_t ask1_count, int32_t max_ask1_count) override;
+
     void OnSubscribeAllMarketData(XTP_EXCHANGE_TYPE exchange_id, XTPRI *error_info) override;
-    void OnQueryAllTickersFullInfo(XTPQFI* ticker_info, XTPRI *error_info, bool is_last) override;
-    void OnQueryTickersPriceInfo(XTPTPI* ticker_info, XTPRI *error_info, bool is_last) override;
-    
+
+    void OnQueryAllTickersFullInfo(XTPQFI *ticker_info, XTPRI *error_info, bool is_last) override;
+
+    void OnQueryTickersPriceInfo(XTPTPI *ticker_info, XTPRI *error_info, bool is_last) override;
+
     // -----------------------
     void process_task();
-    void process_disconnected(Task* task);
-    void process_error(Task* task);
-    void process_sub_market_data(Task* task);
-    void process_unsub_market_data(Task* task);
-    void process_depth_market_data(Task* task);
-    void process_sub_order_book(Task* task);
-    void process_unsub_order_book(Task* task);
-    void process_order_book(Task* task);
-    void process_sub_tick_by_tick(Task* task);
-    void process_unsub_tick_by_tick(Task* task);
-    void process_tick_by_tick(Task* task);
-    void process_subscribe_all_market_data(Task* task);
-    void process_unsubscribe_all_market_data(Task* task);
-    void process_subscribe_all_order_book(Task* task);
-    void process_unsubscribe_all_order_book(Task* task);
-    void process_subscribe_all_tick_by_tick(Task* task);
-    void process_unsubscribe_all_tick_by_tick(Task* task);
-    void process_query_all_tickers(Task* task);
-    void process_query_tickers_price_info(Task* task);
-    void process_query_all_tickers_full_info(Task* task);
 
-    void process_subscribe_all_option_market_data(Task* task);
-    void process_unsubscribe_all_option_market_data(Task* task);
-    void process_subscribe_all_option_order_book(Task* task);
-    void process_unsubscribe_all_option_order_book(Task* task);
-    void process_subscribe_all_option_tick_by_tick(Task* task);
-    void process_unsubscribe_all_option_tick_by_tick(Task* task);
+    void process_disconnected(Task *task);
+
+    void process_error(Task *task);
+
+    void process_sub_market_data(Task *task);
+
+    void process_unsub_market_data(Task *task);
+
+    void process_depth_market_data(Task *task);
+
+    void process_sub_order_book(Task *task);
+
+    void process_unsub_order_book(Task *task);
+
+    void process_order_book(Task *task);
+
+    void process_sub_tick_by_tick(Task *task);
+
+    void process_unsub_tick_by_tick(Task *task);
+
+    void process_tick_by_tick(Task *task);
+
+    void process_subscribe_all_market_data(Task *task);
+
+    void process_unsubscribe_all_market_data(Task *task);
+
+    void process_subscribe_all_order_book(Task *task);
+
+    void process_unsubscribe_all_order_book(Task *task);
+
+    void process_subscribe_all_tick_by_tick(Task *task);
+
+    void process_unsubscribe_all_tick_by_tick(Task *task);
+
+    void process_query_all_tickers(Task *task);
+
+    void process_query_tickers_price_info(Task *task);
+
+    void process_query_all_tickers_full_info(Task *task);
+
+    void process_subscribe_all_option_market_data(Task *task);
+
+    void process_unsubscribe_all_option_market_data(Task *task);
+
+    void process_subscribe_all_option_order_book(Task *task);
+
+    void process_unsubscribe_all_option_order_book(Task *task);
+
+    void process_subscribe_all_option_tick_by_tick(Task *task);
+
+    void process_unsubscribe_all_option_tick_by_tick(Task *task);
 
     // -----------------------
     int login(std::string ip, int port, std::string user, std::string passwd, int socktype, std::string local_ip);
+
     int logout();
+
     int subscribe_all_tick_by_tick(int exchange = 3);
+
     int unsubscribe_all_tick_by_tick(int exchange = 3);
+
     int subscribe_market_data(py::list ticker_list, int count, int exchange);
+
     int unsubscribe_market_data(py::list ticker_list, int count, int exchange);
+
     int subscribe_all_market_data(int exchange = 3);
+
     int unsubscribe_all_market_data(int exchange = 3);
+
     int query_all_tickers_full_info(int exchange);
+
     /*!
      * @param ticker_list 需要查询的股票代码列表
      * @param count 查询股票代码数量
      * @param exchange 交易所
      */
     int query_tickers_price_info(py::list ticker_list, int count, int exchange);
+
     int query_all_tickers_price_info();
 
     // -----------------------
-    virtual void on_disconnected(int reason) {};
-    virtual void on_error(py::dict data) {};
-    virtual void on_sub_market_data(py::dict data, py::dict error, bool last) {};
-    virtual void on_unsub_market_data(py::dict data, py::dict error, bool last) {};
-    virtual void on_depth_market_data(py::dict data,
-            py::list bid1_qty_list, int bid1_count, int max_bid1_count,
-            py::list ask1_qty_list, int ask1_count, int max_ask1_count) {};
-    virtual void on_sub_order_book(py::dict data, py::dict error, bool last) {};
-    virtual void on_unsub_order_book(py::dict data, py::dict error, bool last) {};
-    virtual void on_order_book(py::dict data) {}
-    virtual void on_sub_tick_by_tick(py::dict data, py::dict error, bool last) {};
-    virtual void on_unsub_tick_by_tick(py::dict data, py::dict error, bool last) {};
-    virtual void on_tick_by_tick(py::dict data) {};
-    virtual void on_subscribe_all_market_data(int exchange_id, py::dict error) {};
-    virtual void on_unsubscribe_all_market_data(int exchange_id, py::dict error) {};
-    virtual void on_subscribe_all_order_book(int exchange_id, py::dict error) {};
-    virtual void on_unsubscribe_all_order_book(int exchange_id, py::dict error) {};
-    virtual void on_subscribe_all_tick_by_tick(int exchange_id, py::dict error) {};
-    virtual void on_unsubscribe_all_tick_by_tick(int exchange_id, py::dict error) {};
-    virtual void on_query_all_tickers(py::dict data, py::dict error, bool last) {};
-    virtual void on_query_tickers_price_info(py::dict data, py::dict error, bool last) {};
-    virtual void on_query_all_tickers_full_info(py::dict data, py::dict error, bool last) {};
+    virtual void on_disconnected(int reason)
+    {};
 
-    virtual void on_subscribe_all_option_market_data(int exchange_id, py::dict error) {};
-    virtual void on_unsubscribe_all_option_market_data(int exchange_id, py::dict error) {};
-    virtual void on_subscribe_all_option_order_book(int exchange_id, py::dict error) {};
-    virtual void on_unsubscribe_all_option_order_book(int exchange_id, py::dict error) {};
-    virtual void on_subscribe_all_option_tick_by_tick(int exchange_id, py::dict error) {};
-    virtual void on_unsubscribe_all_option_tick_by_tick(int exchange_id, py::dict error) {};
+    virtual void on_error(py::dict data)
+    {};
+
+    virtual void on_sub_market_data(py::dict data, py::dict error, bool last)
+    {};
+
+    virtual void on_unsub_market_data(py::dict data, py::dict error, bool last)
+    {};
+
+    virtual void on_depth_market_data(py::dict data,
+                                      py::list bid1_qty_list, int bid1_count, int max_bid1_count,
+                                      py::list ask1_qty_list, int ask1_count, int max_ask1_count)
+    {};
+
+    virtual void on_sub_order_book(py::dict data, py::dict error, bool last)
+    {};
+
+    virtual void on_unsub_order_book(py::dict data, py::dict error, bool last)
+    {};
+
+    virtual void on_order_book(py::dict data)
+    {}
+
+    virtual void on_sub_tick_by_tick(py::dict data, py::dict error, bool last)
+    {};
+
+    virtual void on_unsub_tick_by_tick(py::dict data, py::dict error, bool last)
+    {};
+
+    virtual void on_tick_by_tick(py::dict data)
+    {};
+
+    virtual void on_subscribe_all_market_data(int exchange_id, py::dict error)
+    {};
+
+    virtual void on_unsubscribe_all_market_data(int exchange_id, py::dict error)
+    {};
+
+    virtual void on_subscribe_all_order_book(int exchange_id, py::dict error)
+    {};
+
+    virtual void on_unsubscribe_all_order_book(int exchange_id, py::dict error)
+    {};
+
+    virtual void on_subscribe_all_tick_by_tick(int exchange_id, py::dict error)
+    {};
+
+    virtual void on_unsubscribe_all_tick_by_tick(int exchange_id, py::dict error)
+    {};
+
+    virtual void on_query_all_tickers(py::dict data, py::dict error, bool last)
+    {};
+
+    virtual void on_query_tickers_price_info(py::dict data, py::dict error, bool last)
+    {};
+
+    virtual void on_query_all_tickers_full_info(py::dict data, py::dict error, bool last)
+    {};
+
+    virtual void on_subscribe_all_option_market_data(int exchange_id, py::dict error)
+    {};
+
+    virtual void on_unsubscribe_all_option_market_data(int exchange_id, py::dict error)
+    {};
+
+    virtual void on_subscribe_all_option_order_book(int exchange_id, py::dict error)
+    {};
+
+    virtual void on_unsubscribe_all_option_order_book(int exchange_id, py::dict error)
+    {};
+
+    virtual void on_subscribe_all_option_tick_by_tick(int exchange_id, py::dict error)
+    {};
+
+    virtual void on_unsubscribe_all_option_tick_by_tick(int exchange_id, py::dict error)
+    {};
 
     // -----------------------
     //
