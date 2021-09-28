@@ -38,8 +38,7 @@ void QuoteApi::OnError(XTPRI *error_info)
 
 void QuoteApi::OnDepthMarketData(XTPMD *market_data, int64_t bid1_qty[], int32_t bid1_count, int32_t max_bid1_count, int64_t ask1_qty[], int32_t ask1_count, int32_t max_ask1_count)
 {
-    printf("%s: %f\n", market_data->ticker, market_data->last_price);
-    return;
+    // printf("%s: %f\n", market_data->ticker, market_data->last_price);
     auto *task = new Task();
     task->task_name = ON_DEPTH_MARKET_DATA;
 
@@ -942,7 +941,7 @@ struct QuoteApiWrap: QuoteApi
     {
         try {
             pybind11::get_overload(this, "on_depth_market_data")(data, bid1_qty_list, bid1_count, max_bid1_count, ask1_qty_list, ask1_count, max_ask1_count);
-            printf("on_depth_market_data===>bid1_count:%d, ask1_count:%d\n", bid1_count, ask1_count);
+            // printf("on_depth_market_data===>bid1_count:%d, ask1_count:%d\n", bid1_count, ask1_count);
         } catch (pybind11::error_already_set const &) {
             PyErr_Print();
         }

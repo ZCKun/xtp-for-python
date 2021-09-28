@@ -84,8 +84,8 @@ class Md(QuoteApi):
 
 def main():
     md = Md()
-    md.create_quote_api(111, ".", 1)
-    if md.login("119.3.103.38", 6002, "53191002847", "Al5xkgXo", 2, "0") != 0:
+    md.create_quote_api(2, os.getcwd(), 4)
+    if md.login("119.3.103.38", 6002, "53191002847", "Al5xkgXo", 1, "0") != 0:
         print("Login failed!")
         md.get_api_last_error()
         sys.exit(1)
@@ -95,7 +95,10 @@ def main():
     # s = md.subscribe_market_data([{"ticker": "688103"}], 1, XTP_EXCHANGE_TYPE.XTP_EXCHANGE_SH)
     # s = md.query_all_tickers_price_info()
     # s = md.query_all_tickers_full_info(2)
-    s = md.subscribe_all_market_data(XTP_EXCHANGE_TYPE.XTP_EXCHANGE_SH)
+    # s = md.subscribe_all_market_data(XTP_EXCHANGE_TYPE.XTP_EXCHANGE_SH)
+    # s = md.subscribe_market_data([{"ticker": "399905"}], 1, 2)
+    s = md.subscribe_market_data([{"ticker": "301063"}], 1, 2)
+
     if s != 0:
         err = md.get_api_last_error()
         print(err)
