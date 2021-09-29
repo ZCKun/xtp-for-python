@@ -1,14 +1,27 @@
 import os
 import sys
+import json
 
+from datetime import datetime
 from api import QuoteApi
-from api.xtp_types import XTP_EXCHANGE_TYPE
+from api.xtp_types import XTP_EXCHANGE_TYPE, XTP_PROTOCOL_TYPE, XTP_LOG_LEVEL
+
+
+config = json.load(open("config.json", encoding="utf-8"))
+xtp_config = config["xtp"]
+USER = xtp_config["user"]
+PASS = xtp_config["pass"]
+HOST = xtp_config["host"]
+PORT = xtp_config["port"]
+PROTOCOL_TYPE = xtp_config["socket_type"]
+CLIENT_ID = xtp_config["client_id"]
 
 
 class Md(QuoteApi):
 
     def __init__(self):
         super().__init__()
+        self.data = {}
 
     def on_disconnected(self, reason: int):
         """
@@ -80,30 +93,26 @@ class Md(QuoteApi):
         :param is_last: 是否此次订阅的最后一个应答,当为最后一个的时候为true,如果为false,表示还有其他后续消息响应
         """
         print("on_sub_market_data:", ticker, " - ", error_info)
+        self.data[ticker["ticker"]] = ticker
 
 
 def main():
     md = Md()
-    md.create_quote_api(2, os.getcwd(), 4)
-    if md.login("119.3.103.38", 6002, "53191002847", "Al5xkgXo", 1, "0") != 0:
+    md.create_quote_api(CLIENT_ID, os.getcwd(), XTP_LOG_LEVEL.XTP_LOG_LEVEL_DEBUG)
+    if md.login(HOST, PORT, USER, PASS, PROTOCOL_TYPE, "0") != 0:
         print("Login failed!")
         md.get_api_last_error()
         sys.exit(1)
 
     print("TradingDay:", md.get_trading_day())
     print("Login success")
-    # s = md.subscribe_market_data([{"ticker": "688103"}], 1, XTP_EXCHANGE_TYPE.XTP_EXCHANGE_SH)
-    # s = md.query_all_tickers_price_info()
-    # s = md.query_all_tickers_full_info(2)
-    # s = md.subscribe_all_market_data(XTP_EXCHANGE_TYPE.XTP_EXCHANGE_SH)
-    # s = md.subscribe_market_data([{"ticker": "399905"}], 1, 2)
-    s = md.subscribe_market_data([{"ticker": "301063"}], 1, 2)
 
+    s = md.subscribe_all_market_data(XTP_EXCHANGE_TYPE.XTP_EXCHANGE_UNKNOWN)
     if s != 0:
         err = md.get_api_last_error()
         print(err)
 
-    while True:
+    while int(datetime.now().strftime("%H%M%S")) <= 150000:
         pass
 
 

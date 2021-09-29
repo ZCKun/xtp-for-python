@@ -1,7 +1,7 @@
 import sys
 
 from . import py_xtp_quote
-from .xtp_types import XTP_EXCHANGE_TYPE
+from .xtp_types import XTP_EXCHANGE_TYPE, XTP_PROTOCOL_TYPE, XTP_LOG_LEVEL
 
 
 class QuoteApi(py_xtp_quote.QuoteApi):
@@ -25,7 +25,7 @@ class QuoteApi(py_xtp_quote.QuoteApi):
         """
         raise NotImplementedError
 
-    def login(self, ip: str, port: int, user: str, passwd: str, sock_type: int, local_ip: str) -> int:
+    def login(self, ip: str, port: int, user: str, passwd: str, sock_type: XTP_PROTOCOL_TYPE, local_ip: str) -> int:
         """
         用户登录请求
         *此函数为同步阻塞式,不需要异步等待登录成功,当函数返回即可进行后续操作,此api只能有一个连接
@@ -40,7 +40,7 @@ class QuoteApi(py_xtp_quote.QuoteApi):
         """
         return super().login(ip, port, user, passwd, sock_type, local_ip)
 
-    def create_quote_api(self, client_id: int, log_path: str, log_level: int):
+    def create_quote_api(self, client_id: int, log_path: str, log_level: XTP_LOG_LEVEL):
         """
         创建QuoteApi,返回创建出的UserApi
 
@@ -74,7 +74,7 @@ class QuoteApi(py_xtp_quote.QuoteApi):
         """
         return super().subscribe_market_data(ticker, count, exchange_id)
 
-    def subscribe_all_market_data(self, exchange_id: XTP_EXCHANGE_TYPE) -> int:
+    def subscribe_all_market_data(self, exchange_id: XTP_EXCHANGE_TYPE = XTP_EXCHANGE_TYPE.XTP_EXCHANGE_UNKNOWN) -> int:
         """
         订阅全市场的股票行情
         *需要与全市场退订行情接口配套使用
