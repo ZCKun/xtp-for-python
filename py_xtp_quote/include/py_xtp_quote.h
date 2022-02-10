@@ -144,9 +144,9 @@ public:
             : api_ptr_(nullptr),
               task_thread_ptr_(nullptr)
     {
-        std::thread([&] {
-            process_task();
-        }).detach();
+//        std::thread([&] {
+//            process_task();
+//        }).detach();
         // task_thread_ptr_ = &t;
     }
 
@@ -166,61 +166,6 @@ public:
     void OnQueryAllTickersFullInfo(XTPQFI *ticker_info, XTPRI *error_info, bool is_last) override;
 
     void OnQueryTickersPriceInfo(XTPTPI *ticker_info, XTPRI *error_info, bool is_last) override;
-
-    // -----------------------
-    void process_task();
-
-    void process_disconnected(Task *task);
-
-    void process_error(Task *task);
-
-    void process_sub_market_data(Task *task);
-
-    void process_unsub_market_data(Task *task);
-
-    void process_depth_market_data(Task *task);
-
-    void process_sub_order_book(Task *task);
-
-    void process_unsub_order_book(Task *task);
-
-    void process_order_book(Task *task);
-
-    void process_sub_tick_by_tick(Task *task);
-
-    void process_unsub_tick_by_tick(Task *task);
-
-    void process_tick_by_tick(Task *task);
-
-    void process_subscribe_all_market_data(Task *task);
-
-    void process_unsubscribe_all_market_data(Task *task);
-
-    void process_subscribe_all_order_book(Task *task);
-
-    void process_unsubscribe_all_order_book(Task *task);
-
-    void process_subscribe_all_tick_by_tick(Task *task);
-
-    void process_unsubscribe_all_tick_by_tick(Task *task);
-
-    void process_query_all_tickers(Task *task);
-
-    void process_query_tickers_price_info(Task *task);
-
-    void process_query_all_tickers_full_info(Task *task);
-
-    void process_subscribe_all_option_market_data(Task *task);
-
-    void process_unsubscribe_all_option_market_data(Task *task);
-
-    void process_subscribe_all_option_order_book(Task *task);
-
-    void process_unsubscribe_all_option_order_book(Task *task);
-
-    void process_subscribe_all_option_tick_by_tick(Task *task);
-
-    void process_unsubscribe_all_option_tick_by_tick(Task *task);
 
     // -----------------------
     int login(std::string ip, int port, std::string user, std::string passwd, int socktype, std::string local_ip);
@@ -345,4 +290,16 @@ public:
 
     py::dict get_api_last_error();
 
+    void process_query_all_tickers_full_info(const XTPQFI &data, const XTPRI &error, bool is_last);
+
+    void process_query_tickers_price_info(const XTPTPI &data, const XTPRI &error, bool is_last);
+
+    void process_sub_market_data(const XTPST &data, const XTPRI &error, bool is_last);
+
+    void process_subscribe_all_market_data(XTP_EXCHANGE_TYPE exchange_id, const XTPRI &error);
+
+    void process_depth_market_data(const XTPMD &data, py::list& bid1_qty_queue, int32_t bid1_count, int32_t max_bid1_count,
+                                   py::list& ask1_qty_queue, int32_t ask1_count, int32_t max_ask1_count);
+
+    void on_error(const XTPRI &error);
 };
